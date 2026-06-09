@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quarkus-countries-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quarkus-countries-app
+  template:
+    metadata:
+      labels:
+        app: quarkus-countries-app
+    spec:
+      containers:
+        - name: quarkus-countries-app
+          image: quarkus-countries-app:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: QUARKUS_MONGO_URI
+              value: mongodb://localhost:27017/countriesDB
+
+            - name: REDIS_URL
+              value: redis://localhost:6379
+
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: localhost:9092
