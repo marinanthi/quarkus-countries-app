@@ -1,8 +1,6 @@
 package com.example.services;
 
-import com.example.clients.CountryClient;
 import com.example.models.Country;
-import com.example.models.CountryDto;
 import com.example.models.UpdateVisited;
 import com.example.repositories.CountryRepository;
 import io.quarkus.redis.datasource.RedisDataSource;
@@ -15,16 +13,10 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
-import static com.example.mappers.CountryMapper.countryMapper;
+import static com.example.clients.CountriesClient.getFromClientByName;
 
 @ApplicationScoped
 public class CountryService {
-
-    @Inject
-    @RestClient
-    CountryClient countryClient;
 
     @Inject
     CountryRepository countryRepo;
@@ -51,11 +43,10 @@ public class CountryService {
             return Response.ok(mongoCountry).build();
         } else {
             logger.info("Fetching country from API...");
-            List<CountryDto> countries = countryClient.getCountryByName(name, "cca2,name,continents,capital");
-            Country newCountry = countryMapper(countries.get(0));
-            countryRepo.persist(newCountry);
-            redis.value(Country.class).set(name, newCountry);
-            return Response.ok(newCountry).build();
+            Country country = getFromClientByName(name);
+            countryRepo.persist(country);
+            redis.value(Country.class).set(name, country);
+            return Response.ok(country).build();
         }
     }
 
@@ -66,8 +57,7 @@ public class CountryService {
             country.setVisited(request.visited());
             tracker.send(country);
         } else {
-            List<CountryDto> countries = countryClient.getCountryByName(name, "cca2,name,continents,capital");
-            Country newCountry = countryMapper(countries.get(0));
+            Country newCountry = getFromClientByName(name);
             countryRepo.persist(newCountry);
             Country c = countryRepo.findByName(name).orElse(null);
             c.setVisited(request.visited());

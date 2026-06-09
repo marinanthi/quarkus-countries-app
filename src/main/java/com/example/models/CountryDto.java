@@ -47,4 +47,20 @@ public class CountryDto {
     public List<String> getContinents() {
         return continents;
     }
+
+    public void setCapital(List<String> capital) {
+        this.capital = capital;
+    }
+
+    public void setContinents(List<String> continents) {
+        this.continents = continents;
+    }
+
+    public void setName(Name name) {
+        this.name = name;
+    }
+
+    public void setCca2(String cca2) {
+        this.cca2 = cca2;
+    }
 }

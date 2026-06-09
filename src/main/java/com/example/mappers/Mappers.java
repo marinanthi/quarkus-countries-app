@@ -2,9 +2,10 @@ package com.example.mappers;
 
 import com.example.models.Country;
 import com.example.models.CountryDto;
+import jakarta.validation.Valid;
 
-public class CountryMapper {
-    public static Country countryMapper(CountryDto countryDto) {
+public class Mappers {
+    public static Country countryMapper(@Valid CountryDto countryDto) {
         String mappedName = countryDto.getName().getCommon();
         String mappedCapital = countryDto.getCapital().get(0);
         String mappedContinents = countryDto.getContinents().get(0);
