@@ -2,7 +2,6 @@ package com.example.repositories;
 
 import com.example.models.Country;
 import io.quarkus.mongodb.panache.PanacheMongoRepository;
-import io.quarkus.mongodb.panache.common.PanacheUpdate;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 

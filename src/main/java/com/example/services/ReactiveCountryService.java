@@ -1,7 +1,5 @@
 package com.example.services;
 
-import io.quarkus.redis.datasource.RedisDataSource;
-import com.example.clients.ReactiveCountriesClient;
 import com.example.models.Country;
 import com.example.models.UpdateVisited;
 import com.example.repositories.CountryRepository;
@@ -11,11 +9,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
-public class CountryService {
+public class ReactiveCountryService {
 
     @Inject
     CountryRepository countryRepo;
@@ -27,13 +26,21 @@ public class CountryService {
     @Channel("visit-tracker-out")
     Emitter<Country> tracker;
 
+    @Inject
+    @Channel("visited")
+    Emitter<String> visited;
+
+    @Inject
+    @Channel("not-visited")
+    Emitter<String> notVisited;
+
 //    @Inject
 //    RedisDataSource redis;
 
 //    @Inject
 //    ReactiveCountriesClient client;
 
-    Logger logger = LoggerFactory.getLogger(CountryService.class.getName());
+    Logger logger = LoggerFactory.getLogger(ReactiveCountryService.class.getName());
 
     // reactive approach for the GET endpoint
     public Uni<Country> getByNameReactive(String name) {
@@ -73,6 +80,19 @@ public class CountryService {
 
     }
 
+    //  consumes from visit-tracker topic and sends to visited or not-visited channel
+    @Incoming("visit-tracker-in")
+    public void trackCountries(Country country) {
+        String msg = "Country " + country.getCountryName() + " visited status updated to " + country.isVisited();
+
+        System.out.println(country);
+        if (country.isVisited()) {
+            visited.send(msg);
+        } else {
+            notVisited.send(msg);
+        }
+    }
+
     // rest countries API method
 //   public Uni<Country> getFromClientSaveAndCache(String name) {
 //        System.out.println("SERVICE METHOD getFromClientSaveAndCache ENTERED");
@@ -87,44 +107,4 @@ public class CountryService {
 //                    countryRepo.persist(country);
 //                });
 //   }
-
-    // imperative approach
-//    public Response getByName(String name) {
-//    public Response getByName(String name) {
-//        Country mongoCountry = countryRepo.findByName(name).orElse(null);
-//        Country redisCountry = redis.value(Country.class).get(name);
-//
-//        if (redisCountry != null) {
-//            logger.info("Country found in Redis cache: " + redisCountry);
-//            return Response.ok(redisCountry).build();
-//        } else if (mongoCountry != null) {
-//            logger.info("Country found in database: " + mongoCountry);
-//            redis.value(Country.class).set(name, mongoCountry);
-//            return Response.ok(mongoCountry).build();
-//        } else {
-//            logger.info("Fetching country from API...");
-//            Country country = getFromClientByName(name);
-//            countryRepo.persist(country);
-//            redis.value(Country.class).set(name, country);
-//            return Response.ok(country).build();
-//        }
-//    }
-
-//    public Response updateVisitedStatus (String name, UpdateVisited request) {
-//        Country country = countryRepo.findByName(name).orElse(null);
-//
-//        if (country != null) {
-//            country.setVisited(request.visited());
-//            tracker.send(country);
-//        } else {
-//            Country newCountry = getFromClientByName(name);
-//            countryRepo.persist(newCountry);
-//            Country c = countryRepo.findByName(name).orElse(null);
-//            c.setVisited(request.visited());
-//            tracker.send(c);
-//        }
-//
-//        logger.info("Country is sent to Kafka topic visit-tracker");
-//        return Response.ok(country).build();
-//    }
 }

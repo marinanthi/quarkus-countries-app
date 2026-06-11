@@ -2,7 +2,6 @@ package com.example.models;
 
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
-import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 

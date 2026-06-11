@@ -7,7 +7,6 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
-@Singleton
 public class ReactiveCountriesClient {
     @Inject
     @RestClient
