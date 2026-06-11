@@ -1,7 +1,9 @@
 package com.example.resources;
 
+import com.example.models.Country;
 import com.example.models.UpdateVisited;
 import com.example.services.CountryService;
+import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -16,25 +18,32 @@ public class CountriesResource {
     CountryService countryService;
 
     @GET
-    @Path("/{name}")
+    @Path("/reactive/{name}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getCountryByName(@PathParam("name") String name) {
-        try {
-            return countryService.getByName(name);
-        } catch (Exception e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+    public Uni<Country> getCountryByNameReactive(@PathParam("name") String name) {
+        return countryService.getByNameReactive(name);
     }
 
     @PATCH
-    @Path("/{name}/visited")
+    @Path("/reactive/{name}/visited")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateVisited(@PathParam("name") String name, UpdateVisited request) {
-//        try {
-            return countryService.updateVisitedStatus(name, request);
-//        } catch (Exception e) {
-//            return Response.status(Response.Status.NOT_FOUND).build();
-//        }
+    public Uni<Country> updateVisited(@PathParam("name") String name, UpdateVisited request) {
+            return countryService.updateVisitedStatusReactive(name, request);
     }
+
+//    @GET
+//    @Path("/{name}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response getCountryByName(@PathParam("name") String name) {
+//            return countryService.getByName(name);
+//    }
+
+//    @PATCH
+//    @Path("/{name}/visited")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response updateVisited(@PathParam("name") String name, UpdateVisited request) {
+//            return countryService.updateVisitedStatus(name, request);
+//    }
 }

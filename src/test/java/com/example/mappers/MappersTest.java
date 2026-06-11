@@ -12,19 +12,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class MappersTest {
 
     @Test
-    void countryMapperTest() {
-        CountryDto countryFromApi = new CountryDto();
-        countryFromApi.setName(new CountryDto.Name("Greece"));
-        countryFromApi.setCapital(List.of("Athens"));
-        countryFromApi.setContinents(List.of("Europe"));
-        countryFromApi.setCca2("GR");
+    public void shouldMapCarToDto() {
+        CountryDto countryDto = new CountryDto();
+        countryDto.setName(new CountryDto.Name("Greece"));
+        countryDto.setCapital(List.of("Athens"));
+        countryDto.setContinents(List.of("Europe"));
+        countryDto.setCca2("GR");
 
-        Country country = Mappers.countryMapper(countryFromApi);
+        Country c = CountryMapStruct.INSTANCE.countryDtoToCountry(countryDto);
 
-        assertNotNull(country);
-        assertEquals("Greece", country.getCountryName());
-        assertEquals("Athens", country.getCapital());
-        assertEquals("GR", country.getCountryCode());
-        assertEquals("Europe", country.getContinent());
+        assertNotNull(c);
+        assertEquals("Greece", c.getCountryName());
+        assertEquals("Athens", c.getCapital());
+        assertEquals("GR", c.getCountryCode());
+        assertEquals("Europe", c.getContinent());
     }
 }
